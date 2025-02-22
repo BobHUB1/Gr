@@ -1,10 +1,10 @@
-local xdl = {} -- local xdl = loadstring(game:HttpGet("https://raw.githubusercontent.com/BobHUB1/Gr/refs/heads/main/GrLib"))()
+local gr = {} -- local gr = loadstring(game:HttpGet("https://raw.githubusercontent.com/BobHUB1/Gr/refs/heads/main/GrLib"))()
 
-xdl.config = {
+gr.config = {
 	debug = false,
 	reduce_global_functions = false
 }
--- if isfile("XDL/config.cfg") then for 
+-- if isfile("GR/config.cfg") then for 
 
 local timefunc, timefunc1 = os.clock(), os.clock()
 local write = writefile
@@ -19,15 +19,16 @@ local int = tonumber
 
 --[[
 
-local path, xdl = "XDL/xdl.lua"
-if isfile(path) then xdl = dofile(path)()
+local path, gr = "GR/gr.lua"
+if isfile(path) then gr = dofile(path)()
 else local data = game:HttpGet("https://raw.githubusercontent.com/BobHUB1/Gr/refs/heads/main/GrLib")
 task.defer(function() writefile(path, data) end)
-xdl = loadstring(data)() end
+gr = loadstring(data)() end
 
 ]]
 
--- xdl["_____"] = game:GetService("_____")
+-- gr["_____"] = game:GetService("_____")
+
 gr["w"] = game:GetService("Workspace")
 gr["l"] = game:GetService("Lighting")
 gr["p"] = game:GetService("Players")
