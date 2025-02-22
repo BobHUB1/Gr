@@ -1,0 +1,328 @@
+local xdl = {} -- local xdl = loadstring(game:HttpGet("https://raw.githubusercontent.com/fgdergewrgegr/all/refs/heads/main/XD%20Lib"))()
+
+xdl.config = {
+	debug = false,
+	reduce_global_functions = false
+}
+-- if isfile("XDL/config.cfg") then for 
+
+local timefunc, timefunc1 = os.clock(), os.clock()
+local write = writefile
+local read = readfile
+local dof = dofile
+local append = appendfile
+local del = delfile
+local isf = isfile
+
+local str = tostring
+local int = tonumber
+
+--[[
+
+local path, xdl = "XDL/xdl.lua"
+if isfile(path) then xdl = dofile(path)()
+else local data = game:HttpGet("https://raw.githubusercontent.com/fgdergewrgegr/all/refs/heads/main/XD%20Lib")
+task.defer(function() writefile(path, data) end)
+xdl = loadstring(data)() end
+
+]]
+
+-- xdl["_____"] = game:GetService("_____")
+gr["w"] = game:GetService("Workspace")
+gr["l"] = game:GetService("Lighting")
+gr["p"] = game:GetService("Players")
+gr["r"] = game:GetService("RunService")
+gr["d"] = game:GetService("Debris")
+gr["rs"] = game:GetService("ReplicatedStorage")
+gr["rf"] = game:GetService("ReplicatedFirst")
+gr["sg"] = game:GetService("StarterGui")
+gr["cg"] = gethui() or game:GetService("CoreGui")
+gr["chat"] = game:GetService("Chat")
+gr["hs"] = game:GetService("HttpService")
+gr["uis"] = game:GetService("UserInputService")
+
+-- gr["_____"] = gr._____.
+gr["me"] = gr.p.LocalPlayer
+gr["char"] = gr.me.Character
+gr["cam"] = gr.w.CurrentCamera
+gr["m"] = gr.me:GetMouse()
+gr["name"] = gr.me.Name
+gr["dname"] = gr.me.DisplayName
+gr["pg"] = gr.me.PlayerGui
+gr["muid"] = gr.me.UserId
+
+-- gr["_____"] = 
+gr["mhv3"] = Vector3.new("inf", "inf", "inf")
+gr["nv3"] = Vector3.new()
+
+
+-- function gr:_____() end
+function gr:convert(to, data, arg)
+	local funcs = { -- ["_____"] = function(data) return end,
+		["vector3"] = function(data) if data:IsA("BasePart") then return data.Position end end,
+		["cframe"] = function(data) if typeof(data) == "Instance" then return data.CFrame end end,
+		["char"] = function(data)
+			if typeof(data) == "Instance" then if _G.gr_memory then local plr = gr.p:GetPlayerFromCharacter(data); if plr then return plr else for _,plr in gr.plrs() do local char = plr.Character; if char and data:IsDescendantOf(char) then return char end end end
+			else if gr.p:GetPlayerFromCharacter(data) then return gr.p:GetPlayerFromCharacter(data) else for _,plr in gr.plrs() do if plr.Character and data:IsDescendantOf(plr.Character) then return plr.Character end end end end
+			return (debugg and warn("cant find a character using: "..str(data)..": "..typeof(data))) else return gr:c("plr", data).Character or (debugg and warn("cant find a character using: "..str(data)..": "..typeof(data))) end end,
+		["player"] = function(data)
+			if typeof(data) == "Instance" and not(data:IsA("Player")) then return gr.p:GetPlayerFromCharacter(data) or gr:ffc(gr.p, data.Name) or gr:c("char", data) or (debugg and warn("cant find a player using: "..str(data)..": "..typeof(data)))
+			elseif typeof(data) == "number" then return gr.p:GetPlayerByUserId(data) or gr.plrs()[data] or gr:ffp(gr.plrs(), "FollowUserId", data) or gr:ffp(gr.plrs(), "AccountAge", data) or (debugg and warn("cant find a player using: "..str(data)..": "..typeof(data)))
+			elseif typeof(data) == "string" then return gr:ffc(gr.p, data) or gr:ffp(gr.plrs(), "DisplayName", data) or (debugg and warn("cant find a player using: "..str(data)..": "..typeof(data)))
+			else return (debugg and warn(typeof(data).."is not supported for find a player")) end end,
+		["id"] = function(data) if _G.gr_memory then local plr = gr:c("plr", data); if plr then return plr.UserId end else return (gr:c("plr", data) and gr:c("plr", data).UserId) end end,
+		["string"] = function(data, arg) if typeof(data) == "table" then if not(arg) then arg = "" end; for _,str in data do if _ == 1 then data = str else data = data..arg..str end end; return data end end,
+		["readable_string"] = function(data) if typeof(data) == "table" then return "{"..gr:c("s", data, ", ").."}" end end,
+		["name"] = function(data) if typeof(data) == "Instance" then return data.Name end end
+	}; -- funcs["_____"] = funcs["_____"]; funcs["_____"] = funcs["_____"]
+	funcs["vec3"] = funcs["vector3"]; funcs["v3"] = funcs["vec3"]
+	funcs["cfr"] = funcs["cframe"]; funcs["cf"] = funcs["cfr"]
+	funcs["cr"] = funcs["char"]; funcs["c"] = funcs["cr"]
+	funcs["plr"] = funcs["player"]; funcs["p"] = funcs["plr"]
+	funcs["str"] = funcs["string"]; funcs["s"] = funcs["str"]
+	funcs["r_str"] = funcs["readable_string"]; funcs["rs"] = funcs["r_str"]
+	funcs["nm"] = funcs["name"]; funcs["n"] = funcs["nm"]
+	return funcs[to:lower()](data, arg) or data
+end; gr["con"] = gr["convert"]; gr["c"] = gr["con"]
+
+
+--others
+function gr:magnitude(pos1, pos2) return (gr:convert("Vector3", pos1) - gr:convert("Vector3", pos2)).Magnitude end
+function gr:suicide() gr.hum().Health = 0 end
+function gr:playanim(rbxid) if gr.hum():FindFirstChild("Animator") then local animator = gr.hum().Animator local anim = Instance.new("Animation") anim.AnimationId = rbxid animator:LoadAnimation(anim):Play() end end 
+function gr:duplicate(num, data) local lt = gr.lt:cl(); for a=0,num do lt:i(data) end; return unpack(lt:c()) end
+function gr:upgrade(list) for i,v in gr.lt do list[i] = v end; return list end
+function gr:taskspawn(func) task.spawn(func) end
+function gr:taskdefer(func) task.defer(func) end
+function gr:run(name, url, t) local path = "GR/fastload/"..name.."/"; if url then if not(t) then if not(isf(path)) then if _G.gr_memory then local data = game:HttpGet(url); write(path.."source.lua", data); write(path.."url.https", url); return loadstring(data)()
+else write(path.."source.lua", game:HttpGet(url)); write(path.."url.https", url); return loadstring(game:HttpGet(url))() end else gr:td(function() write(path.."source.lua", game:HttpGet(read(path.."url.https"))) end); return dof(path.."source.lua")() end
+elseif isf(path) then return dof(path.."source.lua")() end elseif isf(path) then return dof(path.."source.lua")() end end
+function gr:toautoexec(name, url, t)
+	local path = "GR/autoexec/"..name..".lua"
+	write(path, (t and url) or game:HttpGet(url))
+	local data = gr.lt:cl()
+	data:i("if not(_G['"..name.."']) then")
+	data:i("	if isfile('"..path.."') then")
+	data:i("		_G['"..name.."'] = dofile('"..path.."')() or true")
+	if not(t) then
+		data:i("	else")
+		data:i("		_G['"..name.."'] = loadstring(game:HttpGet('"..url.."'))() or true")
+		data:i("	end")
+	else data:i("	end") end
+	data:i("end")
+	append("GR/autoexec.lua", gr:c("s", data:c(), "\n"))
+end
+
+-- gr["_____"] = gr["_____"]; gr["_____"] = gr["_____"]
+gr["mag"] = gr["magnitude"]; gr["mg"] = gr["mag"]
+gr["playa"] = gr["playanim"]; gr["pa"] = gr["playa"]
+gr["dplct"] = gr["duplicate"]; gr["dpl"] = gr["dplct"]
+gr["upgrd"] = gr["upgrade"]; gr["upg"] = gr["upgrd"]
+gr["tspawn"] = gr["taskspawn"]; gr["ts"] = gr["tspawn"]
+gr["tdefer"] = gr["taskdefer"]; gr["td"] = gr["tdefer"]
+
+
+	--p calls
+    function gr:pcall_print(text, func) local s,e = pcall(func); if not(s) then print(e); if text then print(text) end end end
+    function gr:pcall_return(func) local s,e = pcall(func); if s then return e end end
+    function gr:pcall_return_error(func) local s,e = pcall(func); return e end
+
+    -- gr["_____"] = gr["_____"]; gr["_____"] = gr["_____"]
+        gr["p_print"] = gr["pcall_print"]; gr["pp"] = gr["p_print"]
+        gr["p_return"] = gr["pcall_return"]; gr["pr"] = gr["p_return"]
+        gr["pr_error"] = gr["pcall_return_error"]; gr["pre"] = gr["pr_error"]
+
+-- fw dcp
+    function gr:ffc(parent, ...) local lt = {...}; for i,name in lt do lt[i] = parent:FindFirstChild(gr:convert("Name", name)) end return unpack(lt) end
+    function gr:ffct(parent, names) for i,name in names do local obj = gr:ffc(parent, name); if obj then parent = obj end; names[i] = obj end return unpack(names) end
+
+    function gr:ffd(parent, name) return parent:FindFirstDescendant(gr:convert("Name", name)) end
+    function gr:ffds(parent, ...) for i,name in names do names[i] = gr:ffd(parent, name) end return unpack(names) end
+
+    function gr:wfc(parent, ...) local lt = {...}; for i,name in lt do lt[i] = parent:WaitForChild(gr:convert("Name", name)) end return unpack(lt) end
+    function gr:wfct(parent, names) for i,name in names do local obj = gr:wfc(parent, name); if obj then parent = obj end; names[i] = obj end return unpack(names) end
+
+    function gr:ffp(objs, prop, ...) local lt = {...}; for _,obj in pairs(objs) do local s, v = pcall(function() if table.maxn(lt) ~= 0 then for _,v in lt do if obj[prop] == v then return obj end end else return obj end end); if s then return v end end end
+
+-- checks
+    function gr:check_list(list, find) local i = table.find(list, find); if t then return list[i] end end
+    function gr:check_hum(hum) if hum and hum.Health ~= 0 and hum:GetState() ~= Enum.HumanoidStateType.Dead then return hum end end
+    function gr:check_friend(plr2, id) if not(id) then id = gr.usid end; plr2 = gr:convert("plr", plr2); id = gr:convert("id", id)
+    if _G.gr_memory then if plr2:GetAttribute("Friend") == nil then local t = plr2:IsFriendsWith(id); plr2:SetAttribute("Friend", t); return t else return plr2:GetAttribute("Friend") end else return plr2:IsFriendsWith(id) end end
+    
+    -- gr["_____"] = gr["_____"]; gr["_____"] = gr["_____"]
+        gr["c_list"] = gr["check_list"]; gr["cl"] = gr["c_list"]
+        gr["c_hum"] = gr["check_hum"]; gr["ch"] = gr["c_hum"]
+        gr["c_friend"] = gr["check_friend"]; gr["cf"] = gr["c_friend"]
+
+
+	-- gets
+    function get_time(cmd, svar)
+        local funcs = {
+            rww = function() local temp = timefunc; timefunc = os.clock() return os.clock() - temp end,
+            rwwv = function(var) return os.clock(), os.clock() - var end,
+            rw = function() if timefunc ~= 0 then local temp = timefunc timefunc = 0 return os.clock() - temp else timefunc = os.clock() end end,
+            rwv = function(var) if var ~= 0 then return 0, os.clock() - var else return os.clock(), 0 end end,
+            r = function() if timefunc1 ~= 0 then return os.clock() - timefunc1 end end,
+            rv = function(var) if var ~= 0 then return os.clock() - var end end
+        }; return funcs[cmd](svar)
+    end; gr["g_time"] = gr["get_time"]; gr["gt"] = gr["g_time"]
+    function gr:get_func_time(func) local var = os.clock(); func(); return get_time("rv", var) end
+    function gr:get_parents(obj) if obj.Parent then local p = obj; local tree = {obj} while p.Parent do p = p.Parent; table.insert(tree, p) end; return tree end end
+    
+    function gr:get_char_child(name, obj) return gr:c("char", obj) and gr:ffc(gr:c("char", obj), gr:convert("Name", name)) end
+    function gr:get_limbs(obj) return gr:get_char_child("Right Arm", obj), gr:get_char_child("Right Leg", obj), gr:get_char_child("Left Arm", obj), gr:get_char_child("Left Leg", obj) end
+    function gr:get_my_char_child(name) return gr:ffc(gr:char(), name) or gr:wfc(gr:char(), name) end
+
+    -- gr[""] = gr[""]; gr[""] = gr[""]
+        gr["g_get_func_time"] = gr["get_func_time"]; gr["gft"] = gr["g_get_func_time"]
+        gr["g_parents"] = gr["get_parents"]; gr["gpr"] = gr["g_parents"]
+        gr["g_get_char_child"] = gr["get_char_child"]; gr["gcc"] = gr["g_get_char_child"]
+        gr["g_get_limbs"] = gr["get_limbs"]; gr["gl"] = gr["g_get_limbs"]
+        gr["g_get_my_char_child"] = gr["get_my_char_child"]; gr["gmcc"] = gr["g_get_my_char_child"]
+        gr["g_plr"] = gr["get_plr"]; gr["gp"] = gr["g_plr"]
+
+--connects
+    function gr:connect_property_changed(obj, prop, func) obj:GetPropertyChangedSignal(prop):Connect(func) end
+    function gr:connect_char_added(func) gr.me.CharacterAdded:Connect(func) end
+    function gr:connect_input_begin(func) gr.uis.InputBegan:Connect(func) end
+
+
+		-- gr[""] = gr[""]; gr[""] = gr[""]
+gr["c_property_changed"] = gr["connect_property_changed"]; gr["cpc"] = gr["c_property_changed"]
+gr["c_char_added"] = gr["connect_char_added"]; gr["cca"] = gr["c_char_added"]
+gr["c_input_begin"] = gr["connect_input_begin"]; gr["cib"] = gr["c_input_begin"]
+
+-- ♥creates♥
+function gr:create_blv(parent, name, value) local bv = Instance.new("BoolValue", parent); bv.Value = value; bv.Name = name; return bv end
+function gr:create_ov(parent, name, value) local ov = Instance.new("ObjectValue", parent); ov.Value = value; ov.Name = name; return ov end
+function gr:create_sv(parent, name, value) local sv = Instance.new("StringValue", parent); sv.Value = value; sv.Name = name; return sv end
+function gr:create_nv(parent, name, value) local nv = Instance.new("NumberValue", parent); nv.Value = value; nv.Name = name; return nv end
+function gr:create_bp(parent, name, pos, maxf) local bp = Instance.new("BodyPosition", parent)
+    bp.Name = name; bp.MaxForce = maxf; bp.D = 105; bp.P = 8000; if pos then bp.Position = pos end; return bp end
+function gr:create_bp1(parent, name, pos) return gr:create_bp(parent, name, pos, gr.mhv3) end
+function gr:create_bp2(parent, name) return gr:create_bp1(parent, name, parent.Position) end
+function gr:create_bg(parent, name, maxt, d, cframe) local bg = Instance.new("BodyGyro", parent)
+    bg.Name = name; bg.MaxTorque = maxt; bg.D = d; if cframe then bg.CFrame = cframe end return bg end
+function gr:create_bg1(parent, name, cframe) return gr:create_bg(parent, name, gr.mhv3, 100, cframe) end
+function gr:create_bg2(parent, name) return gr:create_bg1(parent, name, parent.CFrame) end
+function gr:create_bv(parent, name, vl, maxf) local vel = Instance.new("BodyVelocity", parent);
+    vel.Name = name; vel.Velocity = vl; vel.MaxForce = maxf; return vel end
+function gr:create_bv1(parent, name, vl) return gr:create_bv(parent, name, vl, gr.mhv3) end
+function gr:create_sb(parent, name, adr, c3, sc3, t, st, lt) local sb = Instance.new("SelectionBox", parent); sb.Name = name
+    sb.Adornee = adr; sb.Color3 = c3; sb.SurfaceColor3 = sc3; sb.Transparency = t; sb.SurfaceTransparency = st; sb.LineThickness = lt; return sb end
+function gr:create_sb05(prt, name, adr, c3, sc3, t, st) return gr:create_sb(prt, name, adr, c3, sc3, t, st, 0.01) end
+function gr:create_sb1(prt, name, c3, sc3, t, st) return gr:create_sb05(prt, name, prt, c3, sc3, t, st) end
+function gr:create_sb2(prt, name, c3, sc3) return gr:create_sb1(prt, name, c3, sc3, 0, 0.7) end
+function gr:create_sb3(prt, name, sc3) return gr:create_sb2(prt, name, Color3.fromRGB(0, 0, 0), sc3) end
+function gr:create_spl(parent, name, prt, hum, c3, t) local spl = Instance.new("SelectionPartLasso", parent)
+    spl.Name = name; spl.Part = prt; spl.Humanoid = hum; spl.Color3 = c3; spl.Transparency = t; return spl end
+function gr:create_spl1(prt, name, c3, t) return gr:create_spl(prt, name, prt, gr.hum(), c3, t) end
+function gr:create_spl15(prt, name, c3, hum) return gr:create_spl(prt, name, prt, hum, c3, 1) end
+function gr:create_spl2(prt, name, c3) return gr:create_spl1(prt, name, c3, 1) end
+function gr:create_spnl(parent, name, vec, hum, c3, t) local spnl = Instance.new("SelectionPointLasso", parent)
+    spnl.Name = name; spnl.Point = vec; spnl.Humanoid = hum; spnl.Color3 = c3; spnl.Transparency = t; return spnl end
+function gr:create_spnl1(prt, name, vec, c3) return gr:create_spnl(prt, name, vec, gr.hum(), c3, 1) end
+function gr:create_md(parent, name) local md = Instance.new("Model", parent); md.Name = name; return md end
+function gr:create_v3v(parent, name, vec) local v3v = Instance.new("Vector3Value", parent); v3v.Name = name; v3v.Value = vec; return v3v end
+function gr:create_v3v1(parent, name) return gr:create_v3v(parent, name, Vector3.new()) end
+function gr:create_bav(parent, name, vec, maxt) local bav = Instance.new("BodyAngularVelocity", parent)
+    bav.Name = name; bav.AngularVelocity = vec; bav.MaxTorque = maxt; return bav end
+function gr:create_bav1(parent, name, vec) return gr:create_bav(parent, name, vec, gr.mhv3) end
+function gr:create_prt(parent, name, pos, size, t, cc, ct, cq, a) local prt = Instance.new("Part", parent); prt.Size = size
+    prt.Transparency = t; prt.Name = name; prt.CanCollide = cc; prt.CanTouch = ct; prt.CanQuery = cq; prt.Anchored = a; return prt end
+function gr:create_prt1(parent, name, pos, size, ct, cq, a) return gr:create_prt(parent, name, pos, size, 1, false, ct, cq, a) end
+function gr:create_prt2(parent, name, size, ct, cq) return gr:create_prt1(parent, name, Vector3.new(), size, ct, cq, true) end
+function gr:create_prt3(parent, name, size, cq) return gr:create_prt2(parent, name, size, false, cq) end
+function gr:create_ao(parent, name, att) local ao = Instance.new("AlignOrientation", parent); ao.MaxTorque = math.huge; ao.Name = name
+    ao.Responsiveness = 200; ao.Mode = Enum.OrientationAlignmentMode.OneAttachment; ao.Attachment0 = att; return ao end
+function gr:create_att(parent, name) local att = Instance.new("Attachment", parent); att.Name = name; return att end
+
+
+		-- gr[""] = gr[""]; gr[""] = gr[""]
+gr["c_blv"] = gr["create_blv"]; gr["cblv"] = gr["c_blv"]
+gr["c_ov"] = gr["create_ov"]; gr["cov"] = gr["c_ov"]
+gr["c_sv"] = gr["create_sv"]; gr["csv"] = gr["c_sv"]
+gr["c_nv"] = gr["create_nv"]; gr["cnv"] = gr["c_nv"]
+gr["c_bp"] = gr["create_bp"]; gr["cbp"] = gr["c_bp"]
+gr["c_bp1"] = gr["create_bp1"]; gr["cbp1"] = gr["c_bp1"]
+gr["c_bp2"] = gr["create_bp2"]; gr["cbp2"] = gr["c_bp2"]
+gr["c_bg"] = gr["create_bg"]; gr["cbg"] = gr["c_bg"]
+gr["c_bg1"] = gr["create_bg1"]; gr["cbg1"] = gr["c_bg1"]
+gr["c_bg2"] = gr["create_bg2"]; gr["cbg2"] = gr["c_bg2"]
+gr["c_bv"] = gr["create_bv"]; gr["cbv"] = gr["c_bv"]
+gr["c_bv1"] = gr["create_bv1"]; gr["cbv1"] = gr["c_bv1"]
+gr["c_sb"] = gr["create_sb"]; gr["csb"] = gr["c_sb"]
+gr["c_sb05"] = gr["create_sb05"]; gr["csb05"] = gr["c_sb05"]
+gr["c_sb1"] = gr["create_sb1"]; gr["csb1"] = gr["c_sb1"]
+gr["c_sb2"] = gr["create_sb2"]; gr["csb2"] = gr["c_sb2"]
+gr["c_sb3"] = gr["create_sb3"]; gr["csb3"] = gr["c_sb3"]
+gr["c_spl"] = gr["create_spl"]; gr["cspl"] = gr["c_spl"]
+gr["c_spl1"] = gr["create_spl1"]; gr["cspl1"] = gr["c_spl1"]
+gr["c_spl15"] = gr["create_spl15"]; gr["cspl15"] = gr["c_spl15"]
+gr["c_spl2"] = gr["create_spl2"]; gr["cspl2"] = gr["c_spl2"]
+gr["c_spnl"] = gr["create_spnl"]; gr["cspnl"] = gr["c_spnl"]
+gr["c_spnl1"] = gr["create_spnl1"]; gr["cspnl1"] = gr["c_spnl1"]
+gr["c_md"] = gr["create_md"]; gr["cmd"] = gr["c_md"]
+gr["c_v3v"] = gr["create_v3v"]; gr["cv3v"] = gr["c_v3v"]
+gr["c_v3v1"] = gr["create_v3v1"]; gr["cv3v1"] = gr["c_v3v1"]
+gr["c_bav"] = gr["create_bav"]; gr["cbav"] = gr["c_bav"]
+gr["c_bav1"] = gr["create_bav1"]; gr["cbav1"] = gr["c_bav1"]
+gr["c_prt"] = gr["create_prt"]; gr["cprt"] = gr["c_prt"]
+gr["c_prt1"] = gr["create_prt1"]; gr["cprt1"] = gr["c_prt1"]
+gr["c_prt2"] = gr["create_prt2"]; gr["cprt2"] = gr["c_prt2"]
+gr["c_prt3"] = gr["create_prt3"]; gr["cprt3"] = gr["c_prt3"]
+gr["c_ao"] = gr["create_ao"]; gr["cao"] = gr["c_ao"]
+gr["c_att"] = gr["create_att"]; gr["catt"] = gr["c_att"]
+
+			-- gr["_____"] = function() return  end
+gr["tah"] = function() return gr.m.Target, gr.m.Hit end
+gr["plrs"] = function() return ipairs(gr.p:GetPlayers()) end
+gr["muid"] = function() return gr.me.UserId end
+gr["cam"] = function() return gr.w.CurrentCamera end
+gr["grt"] = function() return gr.p.RespawnTime end
+gr["iy"] = function() return loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end
+gr["dex"] = function() return loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))() end
+gr["vhsiy"] = function() return loadstring(game:HttpGet('https://raw.githubusercontent.com/BobHUB1/Gr/refs/heads/main/inf'))() end
+gr["update"] = function() print("Updating..."); local data = game:HttpGet("https://raw.githubusercontent.com/fgdergewrgegr/all/refs/heads/main/XD%20Lib"); print(data); return write("XDL/xdl.lua", data) end
+
+
+    gr["char"] = function() return gr.me.Character or (gr.me.CharacterAdded:Wait() and gr.me.Character) end
+
+    gr["hrp"] = function() return gr:gmcc("HumanoidRootPart") end
+    gr["hum"] = function() return gr:gmcc("Humanoid") end
+    gr["hd"] = function() return gr:gmcc("Head") end
+    
+    gr["limbs"] = function() return gr:gmcc("Right Arm"), gr:gmcc("Right Leg"), gr:gmcc("Left Arm"), gr:gmcc("Left Leg") end
+    gr["all"] = function() return gr.hrp(), gr.hum(), gr.hd() end
+    
+    gr.lt = {} -- gr.lt["_____"] = gr["_____"]
+    gr.lt["find"] = gr["check_list"]
+    gr.lt["fnd"] = gr["check_list"]
+    gr.lt["f"] = gr["check_list"]
+    gr.lt["findid"] = table.find
+    gr.lt["fndi"] = table.find
+    gr.lt["fi"] = table.find
+    gr.lt["clone"] = table.clone
+    gr.lt["cln"] = table.clone
+    gr.lt["cl"] = table.clone
+    gr.lt["insert"] = table.insert
+    gr.lt["ins"] = table.insert
+    gr.lt["i"] = table.insert
+    gr.lt["clear"] = function(lt) for i,obj in lt do if obj == gr.lt[i] then lt[i] = nil end end return lt end
+    gr.lt["clr"] = gr.lt["clear"]
+    gr.lt["c"] = gr.lt["clear"]
+    
+
+print(
+	[[
+    ________         ___________.__   .__                  
+    /  _____/ _______ \_   _____/|  |  |__|  ____     ____  
+   /   \  ___ \_  __ \ |    __)  |  |  |  | /    \   / ___\ 
+   \    \_\  \ |  | \/ |     \   |  |__|  ||   |  \ / /_/  >
+    \______  / |__|    \___  /   |____/|__||___|  / \___  / 
+           \/              \/                   \/ /_____/                                                                                     
+	]]
+)
+
+return xdl
