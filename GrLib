@@ -1,4 +1,4 @@
-local xdl = {} -- local xdl = loadstring(game:HttpGet("https://raw.githubusercontent.com/fgdergewrgegr/all/refs/heads/main/XD%20Lib"))()
+local xdl = {} -- local xdl = loadstring(game:HttpGet("https://raw.githubusercontent.com/BobHUB1/Gr/refs/heads/main/GrLib"))()
 
 xdl.config = {
 	debug = false,
@@ -21,7 +21,7 @@ local int = tonumber
 
 local path, xdl = "XDL/xdl.lua"
 if isfile(path) then xdl = dofile(path)()
-else local data = game:HttpGet("https://raw.githubusercontent.com/fgdergewrgegr/all/refs/heads/main/XD%20Lib")
+else local data = game:HttpGet("https://raw.githubusercontent.com/BobHUB1/Gr/refs/heads/main/GrLib")
 task.defer(function() writefile(path, data) end)
 xdl = loadstring(data)() end
 
